@@ -1,0 +1,32 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: .
+    container_name: warehouse_app
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    environment:
+      - DATABASE_URL=postgresql://warehouse_user:warehouse_pass@db:5432/warehouse_db
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  db:
+    image: postgres:15-alpine
+    container_name: warehouse_db
+    environment:
+      POSTGRES_USER: warehouse_user
+      POSTGRES_PASSWORD: warehouse_pass
+      POSTGRES_DB: warehouse_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  db_data:
